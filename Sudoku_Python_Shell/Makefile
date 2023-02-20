@@ -55,3 +55,4 @@ submission: all
 
 run:
 	java -jar bin/Sudoku.jar
+	

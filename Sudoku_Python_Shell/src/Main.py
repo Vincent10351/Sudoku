@@ -94,7 +94,6 @@ def main ( ):
         print ( "Solutions Found: " + str(numSolutions) )
         print ( "Trail Pushes: " + str(trail.getPushCount()) )
         print ( "Backtracks: "  + str(trail.getUndoCount()) )
-
         return
 
     sudokudata =  SudokuBoard.SudokuBoard( filepath=os.path.abspath( file ) )

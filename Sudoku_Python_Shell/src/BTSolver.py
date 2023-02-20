@@ -48,22 +48,46 @@ class BTSolver:
                 The bool is true if assignment is consistent, false otherwise.
     """
     def forwardChecking ( self ):
+        d = {}
+        assignedVars = [] 
+        for c in self.network.constraints:
+            for v in c.vars:
+                if v.isAssigned():
+                    assignedVars.append(v)
+        while len(assignedVars) != 0:
+            av = assignedVars.pop(0)
+            for neighbor in self.network.getNeighborsOfVariable(av):
+                if neighbor.isChangeable and not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
+                    self.trail.push(neighbor)
+                    neighbor.removeValueFromDomain(av.getAssignment())
+                    d[neighbor] = neighbor.getDomain()
+                    if neighbor.domain.size() == 1:
+                        neighbor.assignValue(neighbor.domain.values[0])
+                        assignedVars.append(neighbor)
+            return (d, False)
+
+        return (d, True)
+                
+        """"
         self.trail.placeTrailMarker()
         d = {}
-        for v in self.network.variables:
+        for v in self.network.variables: 
             if v.isAssigned():
-                for other in self.network.getNeightborsOfVariable(v):
+                for other in self.network.getNeighborsOfVariable(v): # check neighbors of this assigned variable 
                     self.trail.push(other)
                     if v.getAssignment() in other.getValues():
                         if v.getAssignment() == other.getAssignment():
-                            return (d, False)
-                        other.removeValueFromDomain(v.getAssignment())
-                        d[other] = other.getValues()
-                        print (other.getValues())
+                            other.removeValueFromDomain(v.getAssignment())
+                            d[other] = other.getValues()
+                            print(other.getValues())
+                            return (d, False) 
+                            
+                        
                         if other.domain.size() == 0: # if there are no more values left in the other variable
                             self.trail.undo()
                             return (d, False)
         return (d, True)
+        """
 
     # =================================================================
 	# Arc Consistency
@@ -269,3 +293,6 @@ class BTSolver:
 
     def getSolution ( self ):
         return self.network.toSudokuBoard(self.gameboard.p, self.gameboard.q)
+
+
+
