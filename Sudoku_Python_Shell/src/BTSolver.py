@@ -49,24 +49,50 @@ class BTSolver:
     """
     def forwardChecking ( self ):
         d = {}
-        assignedVars = [] 
+        if not self.assignmentsCheck():
+            return (d, False)
+        assignedVars = []
         for c in self.network.constraints:
             for v in c.vars:
                 if v.isAssigned():
                     assignedVars.append(v)
-        while len(assignedVars) != 0:
-            av = assignedVars.pop(0)
+        # print (self.trail.trailStack)
+        # if len(self.trail.trailStack) != 0:
+        #     av = self.trail.trailStack[-1][0]
+        for av in assignedVars:
             for neighbor in self.network.getNeighborsOfVariable(av):
                 if neighbor.isChangeable and not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
                     self.trail.push(neighbor)
                     neighbor.removeValueFromDomain(av.getAssignment())
                     d[neighbor] = neighbor.getDomain()
-                    if neighbor.domain.size() == 1:
-                        neighbor.assignValue(neighbor.domain.values[0])
-                        assignedVars.append(neighbor)
-            return (d, False)
+                # elif neighbor.getAssignment() == av.getAssignment():
+                #     return (d, False)
+
 
         return (d, True)
+
+        # d = {}
+        # if not self.assignmentsCheck():
+        #     return {d, False}
+        
+        # assignedVars = [] 
+        # for c in self.network.constraints:
+        #     for v in c.vars:
+        #         if v.isAssigned():
+        #             assignedVars.append(v)
+        # while len(assignedVars) != 0:
+        #     av = assignedVars.pop(0)
+        #     for neighbor in self.network.getNeighborsOfVariable(av):
+        #         if neighbor.isChangeable and not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
+        #             neighbor.removeValueFromDomain(av.getAssignment())
+        #             d[neighbor] = neighbor.getDomain()
+        #             if neighbor.domain.size() == 1:
+        #                 self.trail.push(neighbor)
+        #                 neighbor.assignValue(neighbor.domain.values[0])
+        #                 assignedVars.append(neighbor)
+        #     return (d, False)
+
+        # return (d, True)
                 
         """"
         self.trail.placeTrailMarker()
