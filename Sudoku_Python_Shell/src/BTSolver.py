@@ -155,22 +155,23 @@ class BTSolver:
                 If there is only one variable, return the list of size 1 containing that variable.
     """
     def MRVwithTieBreaker ( self ):
+        #gets all unassigned variables
         unassigned_var = [v for v in self.network.getVariables() if not v.isAssigned()]
         if len(unassigned_var) == 0:
             return None
         if len(unassigned_var) == 1:
             return unassigned_var[0]
         
+        #gets the variable with the smallest domain size
         minimum_size = float('inf')
-        minimum_var = None
         for v in unassigned_var:
             domain_size = v.domain.size()
             if domain_size < minimum_size:
                 minimum_size = domain_size
-                minimum_var = v
         
+        #grabs the variable with the smallest domain size but biggest amount of unassigned variables
         max = float('-inf')
-        result = None
+        result = [None]
         for v in unassigned_var:
             domain_size = v.domain.size()
             if v.domain.size() == minimum_size:
@@ -178,7 +179,9 @@ class BTSolver:
                 neighbor_count = sum([1 for v in neighbors if not v.isAssigned()])
                 if neighbor_count > max:
                     max = neighbor_count
-                    result = v
+                    result[0] = v
+                elif neighbor_count == max:
+                    result.append(v)
         
         return result
 
