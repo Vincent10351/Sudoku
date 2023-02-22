@@ -56,64 +56,16 @@ class BTSolver:
             for v in c.vars:
                 if v.isAssigned():
                     assignedVars.append(v)
-        # print (self.trail.trailStack)
-        # if len(self.trail.trailStack) != 0:
-        #     av = self.trail.trailStack[-1][0]
         for av in assignedVars:
             for neighbor in self.network.getNeighborsOfVariable(av):
                 if neighbor.isChangeable and not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
                     self.trail.push(neighbor)
                     neighbor.removeValueFromDomain(av.getAssignment())
                     d[neighbor] = neighbor.getDomain()
-                # elif neighbor.getAssignment() == av.getAssignment():
-                #     return (d, False)
-
+                elif neighbor.getAssignment() == av.getAssignment() or neighbor.domain.size() == 0:
+                    return (d, False)
 
         return (d, True)
-
-        # d = {}
-        # if not self.assignmentsCheck():
-        #     return {d, False}
-        
-        # assignedVars = [] 
-        # for c in self.network.constraints:
-        #     for v in c.vars:
-        #         if v.isAssigned():
-        #             assignedVars.append(v)
-        # while len(assignedVars) != 0:
-        #     av = assignedVars.pop(0)
-        #     for neighbor in self.network.getNeighborsOfVariable(av):
-        #         if neighbor.isChangeable and not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
-        #             neighbor.removeValueFromDomain(av.getAssignment())
-        #             d[neighbor] = neighbor.getDomain()
-        #             if neighbor.domain.size() == 1:
-        #                 self.trail.push(neighbor)
-        #                 neighbor.assignValue(neighbor.domain.values[0])
-        #                 assignedVars.append(neighbor)
-        #     return (d, False)
-
-        # return (d, True)
-                
-        """"
-        self.trail.placeTrailMarker()
-        d = {}
-        for v in self.network.variables: 
-            if v.isAssigned():
-                for other in self.network.getNeighborsOfVariable(v): # check neighbors of this assigned variable 
-                    self.trail.push(other)
-                    if v.getAssignment() in other.getValues():
-                        if v.getAssignment() == other.getAssignment():
-                            other.removeValueFromDomain(v.getAssignment())
-                            d[other] = other.getValues()
-                            print(other.getValues())
-                            return (d, False) 
-                            
-                        
-                        if other.domain.size() == 0: # if there are no more values left in the other variable
-                            self.trail.undo()
-                            return (d, False)
-        return (d, True)
-        """
 
     # =================================================================
 	# Arc Consistency
@@ -182,7 +134,17 @@ class BTSolver:
         Return: The unassigned variable with the smallest domain
     """
     def getMRV ( self ):
-        return None
+        minimum = float('inf')
+        result = None
+
+        for v in self.network.variables:
+            if not v.isAssigned():
+                domain_size = v.domain.size()
+                if domain_size < minimum:
+                    minimum = domain_size
+                    result = v
+
+        return result   
 
     """
         Part 2 TODO: Implement the Minimum Remaining Value Heuristic
@@ -193,7 +155,32 @@ class BTSolver:
                 If there is only one variable, return the list of size 1 containing that variable.
     """
     def MRVwithTieBreaker ( self ):
-        return None
+        unassigned_var = [v for v in self.network.getVariables() if not v.isAssigned()]
+        if len(unassigned_var) == 0:
+            return None
+        if len(unassigned_var) == 1:
+            return unassigned_var[0]
+        
+        minimum_size = float('inf')
+        minimum_var = None
+        for v in unassigned_var:
+            domain_size = v.domain.size()
+            if domain_size < minimum_size:
+                minimum_size = domain_size
+                minimum_var = v
+        
+        max = float('-inf')
+        result = None
+        for v in unassigned_var:
+            domain_size = v.domain.size()
+            if v.domain.size() == minimum_size:
+                neighbors = self.network.getNeighborsOfVariable()
+                neighbor_count = sum([1 for v in neighbors if not v.isAssigned()])
+                if neighbor_count > max:
+                    max = neighbor_count
+                    result = v
+        
+        return result
 
     """
          Optional TODO: Implement your own advanced Variable Heuristic
