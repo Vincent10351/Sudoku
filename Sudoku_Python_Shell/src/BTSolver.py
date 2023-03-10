@@ -64,7 +64,7 @@ class BTSolver:
                     d[neighbor] = neighbor.getDomain()
                 elif neighbor.getAssignment() == av.getAssignment() or neighbor.domain.size() == 0:
                     return (d, False)
-                
+
         return (d, True)
 
     # =================================================================
