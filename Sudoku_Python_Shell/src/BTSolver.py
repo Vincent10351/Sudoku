@@ -123,7 +123,7 @@ class BTSolver:
                             self.trail.push(var)
                             assignedValues[var] = (i+1)
                             var.assignValue(i+1)
-        
+    
         consistency = self.assignmentsCheck()
         return (assignedValues, consistency)
 
