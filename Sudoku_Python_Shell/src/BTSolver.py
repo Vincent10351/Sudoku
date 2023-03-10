@@ -64,7 +64,7 @@ class BTSolver:
                     d[neighbor] = neighbor.getDomain()
                 elif neighbor.getAssignment() == av.getAssignment() or neighbor.domain.size() == 0:
                     return (d, False)
-
+                
         return (d, True)
 
     # =================================================================
@@ -104,7 +104,28 @@ class BTSolver:
                 The bool is true if assignment is consistent, false otherwise.
     """
     def norvigCheck ( self ):
-        return ({}, False)
+        assignedValues = {}
+        # Part 1 is the same as FC algorithm 
+        self.forwardChecking()           
+
+        # Part 2 Assign values to the variable if there is only one value available 
+        for c in self.network.constraints:
+            counter = []
+            for i in range(self.gameboard.N):
+                counter.append(0)
+            for i in range(self.gameboard.N):
+                for val in c.vars[i].getValues():
+                    counter[val-1] += 1
+            for i in range(self.gameboard.N):
+                if counter[i] == 1:
+                    for var in c.vars:
+                        if var.domain.contains(i+1):
+                            self.trail.push(var)
+                            assignedValues[var] = (i+1)
+                            var.assignValue(i+1)
+        
+        consistency = self.assignmentsCheck()
+        return (assignedValues, consistency)
 
     """
          Optional TODO: Implement your own advanced Constraint Propagation
