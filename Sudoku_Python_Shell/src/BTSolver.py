@@ -106,9 +106,8 @@ class BTSolver:
     def norvigCheck ( self ):
         assignedValues = {}
         # Part 1 is the same as FC algorithm         
-        d = {}
         if not self.assignmentsCheck():
-            return (d, False)
+            return (assignedValues, False)
         assignedVars = []
         for c in self.network.constraints:
             for v in c.vars:
@@ -116,12 +115,11 @@ class BTSolver:
                     assignedVars.append(v)
         for av in assignedVars:
             for neighbor in self.network.getNeighborsOfVariable(av):
-                if neighbor.isChangeable and not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
+                if not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
                     self.trail.push(neighbor)
                     neighbor.removeValueFromDomain(av.getAssignment())
-                    d[neighbor] = neighbor.getDomain()
                 elif neighbor.getAssignment() == av.getAssignment() or neighbor.domain.size() == 0:
-                    return (d, False)
+                    return (assignedValues, False)
         # Part 2 Assign values to the variable if there is only one value available 
         for c in self.network.constraints:
             counter = [0 for i in range(self.gameboard.N)]
