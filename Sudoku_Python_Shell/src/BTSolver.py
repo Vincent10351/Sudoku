@@ -120,6 +120,7 @@ class BTSolver:
                     neighbor.removeValueFromDomain(av.getAssignment())
                 elif neighbor.getAssignment() == av.getAssignment() or neighbor.domain.size() == 0:
                     return (assignedValues, False)
+
         # Part 2 Assign values to the variable if there is only one value available 
         for c in self.network.constraints:
             counter = [0 for i in range(self.gameboard.N)]
@@ -189,7 +190,7 @@ class BTSolver:
         #gets all unassigned variables
         unassigned_var = [v for v in self.network.getVariables() if not v.isAssigned()]
         if len(unassigned_var) == 0:
-            return None
+            return [None]
         if len(unassigned_var) == 1:
             return unassigned_var[0]
         
@@ -206,7 +207,7 @@ class BTSolver:
         for v in unassigned_var:
             domain_size = v.domain.size()
             if v.domain.size() == minimum_size:
-                neighbors = self.network.getNeighborsOfVariable()
+                neighbors = self.network.getNeighborsOfVariable(v)
                 neighbor_count = sum([1 for v in neighbors if not v.isAssigned()])
                 if neighbor_count > max:
                     max = neighbor_count
