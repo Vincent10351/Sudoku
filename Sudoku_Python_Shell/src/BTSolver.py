@@ -62,8 +62,6 @@ class BTSolver:
                     self.trail.push(neighbor)
                     neighbor.removeValueFromDomain(av.getAssignment())
                     d[neighbor] = neighbor.getDomain()
-                    if  neighbor.domain.size()== 1:
-                        neighbor.assignValue(neighbor.domain.values[0])
                 elif neighbor.getAssignment() == av.getAssignment() or neighbor.domain.size() == 0:
                     return (d, False)
 
