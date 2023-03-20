@@ -118,11 +118,12 @@ class BTSolver:
                 if not neighbor.isAssigned() and neighbor.getDomain().contains(av.getAssignment()):
                     self.trail.push(neighbor)
                     neighbor.removeValueFromDomain(av.getAssignment())
-                    if  neighbor.domain.size()== 1:
+                    if neighbor.domain.size() == 1:
                         neighbor.assignValue(neighbor.domain.values[0])
+                        self.norvigCheck()
                 elif neighbor.getAssignment() == av.getAssignment() or neighbor.domain.size() == 0:
                     return (assignedValues, False)
-
+                
         # Part 2 Assign values to the variable if there is only one value available 
         for c in self.network.constraints:
             counter = [0 for i in range(self.gameboard.N)]
@@ -133,12 +134,10 @@ class BTSolver:
                 if counter[i] == 1:
                     for var in c.vars:
                         if var.domain.contains(i+1):
-                            #self.trail.push(var)
                             assignedValues[var] = (i+1)
                             var.assignValue(i+1)
     
-        consistency = self.assignmentsCheck()
-        return (assignedValues, consistency)
+        return (assignedValues, self.assignmentsCheck())
 
     """
          Optional TODO: Implement your own advanced Constraint Propagation
