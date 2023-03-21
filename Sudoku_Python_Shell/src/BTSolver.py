@@ -193,7 +193,7 @@ class BTSolver:
         if len(unassigned_var) == 0:
             return [None]
         if len(unassigned_var) == 1:
-            return unassigned_var[0]
+            return [unassigned_var[0]]
         
         #gets the variable with the smallest domain size
         minimum_size = float('inf')
